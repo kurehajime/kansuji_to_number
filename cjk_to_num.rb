@@ -50,8 +50,10 @@ class CjkParser < Parslet::Parser
 
     rule(:pure_expression){pure_number.repeat(1).as(:pure_expression) }
 
+
+
     rule(:not_break_expression){ 
-        (pure_expression.maybe.as(:left) >> (not_break_unit.as(:center) >> not_break_expression.maybe.as(:right)).repeat(1)) |
+        (pure_expression.maybe.as(:left) >> not_break_unit.as(:unit) >> not_break_expression.maybe.as(:right)).as(:not_break_expression) |
         pure_expression
      }
 
@@ -60,6 +62,20 @@ class CjkParser < Parslet::Parser
     root :not_break_expression
 end
 
+PureExpressionNode = Struct.new(:value) do
+    def eval
+      value.to_i
+    end
+end
+
+NotBreakExpressionNode = Struct.new(:left, :unit, :right) do
+    def eval
+        l = left.eval || 1
+        r = right.eval || 0
+        l * unit + r
+    end
+end
+ 
 class CjkTrans < Parslet::Transform
     rule(lit_0: simple(:x)) { 0 }
     rule(lit_1: simple(:x)) { 1 }
@@ -86,9 +102,14 @@ class CjkTrans < Parslet::Transform
         x.reverse.inject(0) {|result, item|
          result = result + item * figure
          figure *= 10
-         result
+         PureExpressionNode.new(result)
         }
      }
+
+    rule(not_break_expression: subtree(:tree)) {
+        NotBreakExpressionNode.new(tree[:left],tree[:unit],tree[:right])
+    }
+
 
 end
 
