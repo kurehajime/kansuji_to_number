@@ -46,11 +46,18 @@ class CjkParser < Parslet::Parser
         lit_100|
         lit_1000).as(:not_break_unit) }
 
+    # Expression
+
     rule(:pure_expression){pure_number.repeat(1).as(:pure_expression) }
+
+    rule(:not_break_expression){ 
+        (pure_expression.maybe.as(:left) >> (not_break_unit.as(:center) >> not_break_expression.maybe.as(:right)).repeat(1)) |
+        pure_expression
+     }
 
 
     # Grammar parts
-    root :pure_expression
+    root :not_break_expression
 end
 
 class CjkTrans < Parslet::Transform
@@ -67,6 +74,12 @@ class CjkTrans < Parslet::Transform
 
     rule(pure_number: simple(:x)) { x }
 
+    rule(lit_10: simple(:x)) { 10 }
+    rule(lit_100: simple(:x)) { 100 }
+    rule(lit_1000: simple(:x)) { 1000 }
+
+    rule(not_break_unit: simple(:x)) { x }
+
     rule(pure_expression: sequence(:x)) {
         sum = 0 
         figure = 1
@@ -79,5 +92,6 @@ class CjkTrans < Parslet::Transform
 
 end
 
-parsed = CjkParser.new.parse("零一二三四五六七八九〇") 
+# parsed = CjkParser.new.parse("零一二三四五六七八九〇") 
+parsed = CjkParser.new.parse("五百十一") 
 pp CjkTrans.new.apply(parsed)
