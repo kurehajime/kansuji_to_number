@@ -114,5 +114,5 @@ class CjkTrans < Parslet::Transform
 end
 
 # parsed = CjkParser.new.parse("零一二三四五六七八九〇") 
-parsed = CjkParser.new.parse("五百十一") 
+parsed = CjkParser.new.parse("千五百十一") 
 pp CjkTrans.new.apply(parsed)
