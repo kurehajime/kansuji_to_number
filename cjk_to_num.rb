@@ -18,7 +18,15 @@ class CjkParser < Parslet::Parser
     rule(:lit_8)     { str('八').as(:lit_8) >> space? }
     rule(:lit_9)     { str('九').as(:lit_9) >> space? }
 
+    # none break unit
+    rule(:lit_10)     { (str('十')).as(:lit_10) >> space? }
+    rule(:lit_100)    { (str('百')).as(:lit_100) >> space? }
+    rule(:lit_1000)   { (str('千')).as(:lit_1000) >> space? }
 
+    # break unit
+    rule(:lit_10000)        { (str('万')).as(:lit_10000) >> space? }
+    rule(:lit_100000000)    { (str('億')).as(:lit_100000000) >> space? }
+    rule(:lit_1000000000000){ (str('兆')).as(:lit_1000000000000) >> space? }
 
     # Things
     rule(:pure_number){(
@@ -31,10 +39,18 @@ class CjkParser < Parslet::Parser
         lit_6|
         lit_7|
         lit_8|
-        lit_9).repeat(1).as(:cjk_num) }
+        lit_9).as(:pure_number) }
+    
+    rule(:not_break_unit){(
+        lit_10|
+        lit_100|
+        lit_1000).as(:not_break_unit) }
+
+    rule(:pure_expression){pure_number.repeat(1).as(:pure_expression) }
+
 
     # Grammar parts
-    root :pure_number
+    root :pure_expression
 end
 
 class CjkTrans < Parslet::Transform
@@ -48,6 +64,19 @@ class CjkTrans < Parslet::Transform
     rule(lit_7: simple(:x)) { 7 }
     rule(lit_8: simple(:x)) { 8 }
     rule(lit_9: simple(:x)) { 9 }
+
+    rule(pure_number: simple(:x)) { x }
+
+    rule(pure_expression: sequence(:x)) {
+        sum = 0 
+        figure = 1
+        x.reverse.inject(0) {|result, item|
+         result = result + item * figure
+         figure *= 10
+         result
+        }
+     }
+
 end
 
 parsed = CjkParser.new.parse("零一二三四五六七八九〇") 
