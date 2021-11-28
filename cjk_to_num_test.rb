@@ -84,6 +84,18 @@ class CjkToNumberTest < Minitest::Test
         transed = CjkToNumber::CjkTrans.new.apply(parsed)
         result = transed.eval
         assert_equal result, 12003400056789
+
+        parsed = CjkToNumber::CjkParser.new.parse("一千二百三十四万") 
+        transed = CjkToNumber::CjkTrans.new.apply(parsed)
+        result = transed.eval
+        assert_equal result, 12340000
+
+        assert_raises Parslet::ParseFailed do
+            parsed = CjkToNumber::CjkParser.new.parse("1億万") 
+            transed = CjkToNumber::CjkTrans.new.apply(parsed)
+            result = transed.eval
+            pp result
+        end
     end
 end
   

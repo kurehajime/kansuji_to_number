@@ -64,7 +64,7 @@ module CjkToNumber
          }
     
         rule(:layer_2_expression){ 
-            (layer_1_expression.maybe.as(:left) >> layer_2_unit.as(:unit) >> layer_2_expression.maybe.as(:right)).as(:layer_2_expression) |
+            (layer_1_expression.as(:left) >> layer_2_unit.as(:unit) >> layer_2_expression.maybe.as(:right)).as(:layer_2_expression) |
             layer_1_expression
         }
     
