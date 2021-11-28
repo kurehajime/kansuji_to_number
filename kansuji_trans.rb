@@ -1,5 +1,5 @@
 require 'parslet' 
-require_relative 'cjk_nodes'
+require_relative 'kansuji_nodes'
 module KansujiToNumber
     class KansujiTrans < Parslet::Transform
         rule(lit_0: simple(:x)) { 0 }

@@ -1,6 +1,6 @@
 require 'parslet' 
 module KansujiToNumber
-    class CjkParser < Parslet::Parser
+    class KansujiParser < Parslet::Parser
 
         # non number
         rule(:space)      { match('\s').repeat(1) }
