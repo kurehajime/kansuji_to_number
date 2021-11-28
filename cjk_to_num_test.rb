@@ -4,13 +4,13 @@ require_relative 'cjk_to_num'
 class CjkToNumberTest < Minitest::Test
 
     def test_pure
-        parsed = CjkToNumber::CjkParser.new.parse("1") 
+        parsed = CjkToNumber.parse("1")
         assert_equal parsed, {:pure_expression=>[{:pure_number=>{:int=>"1"}}]}
 
-        parsed = CjkToNumber::CjkParser.new.parse("一") 
+        parsed = CjkToNumber.parse("一")
         assert_equal parsed, {:pure_expression=>[{:pure_number=>{:lit_1=>"一"}}]}
 
-        parsed = CjkToNumber::CjkParser.new.parse("零一二三四五六七八九〇") 
+        parsed = CjkToNumber.parse("零一二三四五六七八九〇")
         assert_equal parsed, {:pure_expression=>
             [{:pure_number=>{:lit_0=>"零"}},
              {:pure_number=>{:lit_1=>"一"}},
@@ -26,7 +26,7 @@ class CjkToNumberTest < Minitest::Test
     end
 
     def test_layer1_unit
-        parsed = CjkToNumber::CjkParser.new.parse("千百十") 
+        parsed = CjkToNumber.parse("千百十")
         assert_equal parsed,  {:layer_1_expression=>
             {:left=>nil,
              :unit=>{:layer_1_unit=>{:lit_1000=>"千"}},
@@ -42,7 +42,7 @@ class CjkToNumberTest < Minitest::Test
     end
 
     def test_layer2_unit
-        parsed = CjkToNumber::CjkParser.new.parse("一兆二億三万四千五百六十七") 
+        parsed = CjkToNumber.parse("一兆二億三万四千五百六十七")
         assert_equal parsed,
          {:layer_2_expression=>
             {:left=>{:pure_expression=>[{:pure_number=>{:lit_1=>"一"}}]},
@@ -75,25 +75,17 @@ class CjkToNumberTest < Minitest::Test
     end
 
     def test_trans
-        parsed = CjkToNumber::CjkParser.new.parse("一兆二億三万四千五百六十七") 
-        transed = CjkToNumber::CjkTrans.new.apply(parsed)
-        result = transed.eval
+        result = CjkToNumber.trans("一兆二億三万四千五百六十七")
         assert_equal result, 1000200034567
 
-        parsed = CjkToNumber::CjkParser.new.parse("12兆34億5万6千7百89") 
-        transed = CjkToNumber::CjkTrans.new.apply(parsed)
-        result = transed.eval
+        result = CjkToNumber.trans("12兆34億5万6千7百89")
         assert_equal result, 12003400056789
 
-        parsed = CjkToNumber::CjkParser.new.parse("一千二百三十四万") 
-        transed = CjkToNumber::CjkTrans.new.apply(parsed)
-        result = transed.eval
+        result = CjkToNumber.trans("一千二百三十四万")
         assert_equal result, 12340000
 
         assert_raises Parslet::ParseFailed do
-            parsed = CjkToNumber::CjkParser.new.parse("1億万") 
-            transed = CjkToNumber::CjkTrans.new.apply(parsed)
-            result = transed.eval
+            result = CjkToNumber.trans("1億万")
             pp result
         end
     end
