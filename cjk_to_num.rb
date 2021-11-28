@@ -41,10 +41,10 @@ class CjkParser < Parslet::Parser
         lit_8|
         lit_9).as(:pure_number) }
     
-    rule(:not_break_unit){(
+    rule(:layer_1_unit){(
         lit_10|
         lit_100|
-        lit_1000).as(:not_break_unit) }
+        lit_1000).as(:layer_1_unit) }
 
     # Expression
 
@@ -52,14 +52,14 @@ class CjkParser < Parslet::Parser
 
 
 
-    rule(:not_break_expression){ 
-        (pure_expression.maybe.as(:left) >> not_break_unit.as(:unit) >> not_break_expression.maybe.as(:right)).as(:not_break_expression) |
+    rule(:layer_1_expression){ 
+        (pure_expression.maybe.as(:left) >> layer_1_unit.as(:unit) >> layer_1_expression.maybe.as(:right)).as(:layer_1_expression) |
         pure_expression
      }
 
 
     # Grammar parts
-    root :not_break_expression
+    root :layer_1_expression
 end
 
 PureExpressionNode = Struct.new(:value) do
@@ -68,7 +68,7 @@ PureExpressionNode = Struct.new(:value) do
     end
 end
 
-NotBreakExpressionNode = Struct.new(:left, :unit, :right) do
+Layer1ExpressionNode = Struct.new(:left, :unit, :right) do
     def eval
         l = left.eval || 1
         r = right.eval || 0
@@ -94,7 +94,7 @@ class CjkTrans < Parslet::Transform
     rule(lit_100: simple(:x)) { 100 }
     rule(lit_1000: simple(:x)) { 1000 }
 
-    rule(not_break_unit: simple(:x)) { x }
+    rule(layer_1_unit: simple(:x)) { x }
 
     rule(pure_expression: sequence(:x)) {
         sum = 0 
@@ -106,8 +106,8 @@ class CjkTrans < Parslet::Transform
         }
      }
 
-    rule(not_break_expression: subtree(:tree)) {
-        NotBreakExpressionNode.new(tree[:left],tree[:unit],tree[:right])
+    rule(layer_1_expression: subtree(:tree)) {
+        Layer1ExpressionNode.new(tree[:left],tree[:unit],tree[:right])
     }
 
 
