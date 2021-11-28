@@ -1,6 +1,5 @@
 require 'parslet' 
 require_relative 'kansuji_parser'
-require_relative 'kansuji_nodes'
 require_relative 'kansuji_trans'
 module KansujiToNumber
     def self.parse(str)
