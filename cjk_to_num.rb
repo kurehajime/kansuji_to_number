@@ -123,11 +123,12 @@ class CjkTrans < Parslet::Transform
     rule(pure_expression: sequence(:x)) {
         sum = 0 
         figure = 1
-        x.reverse.inject(0) {|result, item|
+        i = x.reverse.inject(0) {|result, item|
          result = result + item * figure
          figure *= 10
-         PureExpressionNode.new(result)
+         result
         }
+        PureExpressionNode.new(i)
     }
 
     rule(layer_1_expression: subtree(:tree)) {
@@ -141,5 +142,5 @@ class CjkTrans < Parslet::Transform
 end
 
 # parsed = CjkParser.new.parse("零一二三四五六七八九〇") 
-parsed = CjkParser.new.parse("２万千五百十一") 
+parsed = CjkParser.new.parse("２３万千五百十一") 
 pp CjkTrans.new.apply(parsed)
