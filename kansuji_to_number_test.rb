@@ -1,16 +1,16 @@
 require 'minitest/autorun'
-require_relative 'cjk_to_num'
+require_relative 'kansuji_to_number'
 
-class CjkToNumberTest < Minitest::Test
+class KansujiToNumberTest < Minitest::Test
 
     def test_pure
-        parsed = CjkToNumber.parse("1")
+        parsed = KansujiToNumber.parse("1")
         assert_equal parsed, {:pure_expression=>[{:pure_number=>{:int=>"1"}}]}
 
-        parsed = CjkToNumber.parse("一")
+        parsed = KansujiToNumber.parse("一")
         assert_equal parsed, {:pure_expression=>[{:pure_number=>{:lit_1=>"一"}}]}
 
-        parsed = CjkToNumber.parse("零一二三四五六七八九〇")
+        parsed = KansujiToNumber.parse("零一二三四五六七八九〇")
         assert_equal parsed, {:pure_expression=>
             [{:pure_number=>{:lit_0=>"零"}},
              {:pure_number=>{:lit_1=>"一"}},
@@ -26,7 +26,7 @@ class CjkToNumberTest < Minitest::Test
     end
 
     def test_layer1_unit
-        parsed = CjkToNumber.parse("千百十")
+        parsed = KansujiToNumber.parse("千百十")
         assert_equal parsed,  {:layer_1_expression=>
             {:left=>nil,
              :unit=>{:layer_1_unit=>{:lit_1000=>"千"}},
@@ -42,7 +42,7 @@ class CjkToNumberTest < Minitest::Test
     end
 
     def test_layer2_unit
-        parsed = CjkToNumber.parse("一兆二億三万四千五百六十七")
+        parsed = KansujiToNumber.parse("一兆二億三万四千五百六十七")
         assert_equal parsed,
          {:layer_2_expression=>
             {:left=>{:pure_expression=>[{:pure_number=>{:lit_1=>"一"}}]},
@@ -75,17 +75,17 @@ class CjkToNumberTest < Minitest::Test
     end
 
     def test_trans
-        result = CjkToNumber.trans("一兆二億三万四千五百六十七")
+        result = KansujiToNumber.trans("一兆二億三万四千五百六十七")
         assert_equal result, 1000200034567
 
-        result = CjkToNumber.trans("12兆34億5万6千7百89")
+        result = KansujiToNumber.trans("12兆34億5万6千7百89")
         assert_equal result, 12003400056789
 
-        result = CjkToNumber.trans("一千二百三十四万")
+        result = KansujiToNumber.trans("一千二百三十四万")
         assert_equal result, 12340000
 
         assert_raises Parslet::ParseFailed do
-            result = CjkToNumber.trans("1億万")
+            result = KansujiToNumber.trans("1億万")
             pp result
         end
     end

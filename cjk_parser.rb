@@ -1,5 +1,5 @@
 require 'parslet' 
-module CjkToNumber
+module KansujiToNumber
     class CjkParser < Parslet::Parser
 
         # non number
