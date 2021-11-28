@@ -56,7 +56,6 @@ class CjkParser < Parslet::Parser
         lit_1000000000000).as(:layer_2_unit) }
 
     # Expression
-
     rule(:pure_expression){pure_number.repeat(1).as(:pure_expression) }
 
     rule(:layer_1_expression){ 
@@ -64,19 +63,25 @@ class CjkParser < Parslet::Parser
         pure_expression
      }
 
-     rule(:layer_2_expression){ 
+    rule(:layer_2_expression){ 
         (layer_1_expression.maybe.as(:left) >> layer_2_unit.as(:unit) >> layer_2_expression.maybe.as(:right)).as(:layer_2_expression) |
         layer_1_expression
-     }
-
+    }
 
     # Grammar parts
     root :layer_2_expression
 end
 
-PureExpressionNode = Struct.new(:value) do
+PureExpressionNode = Struct.new(:args) do
     def eval
-      value.to_i
+        sum = 0 
+        figure = 1
+        i = args.reverse.inject(0) {|result, item|
+         result = result + item * figure
+         figure *= 10
+         result
+        }
+        result.to_i
     end
 end
 
@@ -120,15 +125,8 @@ class CjkTrans < Parslet::Transform
     rule(layer_1_unit: simple(:x)) { x }
     rule(layer_2_unit: simple(:x)) { x }
 
-    rule(pure_expression: sequence(:x)) {
-        sum = 0 
-        figure = 1
-        i = x.reverse.inject(0) {|result, item|
-         result = result + item * figure
-         figure *= 10
-         result
-        }
-        PureExpressionNode.new(i)
+    rule(pure_expression: sequence(:args)) {
+        PureExpressionNode.new(args)
     }
 
     rule(layer_1_expression: subtree(:tree)) {
@@ -141,6 +139,5 @@ class CjkTrans < Parslet::Transform
 
 end
 
-# parsed = CjkParser.new.parse("零一二三四五六七八九〇") 
 parsed = CjkParser.new.parse("２３万千五百十一") 
 pp CjkTrans.new.apply(parsed)
