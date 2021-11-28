@@ -8,7 +8,7 @@ class CjkParser < Parslet::Parser
 
     # pure number
     rule(:int)    { match('[0-9]').as(:int) >> space? }
-
+    rule(:wide_int)    { match('[１２３４５６７８９０]').as(:wide_int) >> space? }
     rule(:lit_0)     { (str('零') | str('〇') ).as(:lit_0) >> space? }
     rule(:lit_1)     { str('一').as(:lit_1) >> space? }
     rule(:lit_2)     { str('二').as(:lit_2) >> space? }
@@ -42,7 +42,8 @@ class CjkParser < Parslet::Parser
         lit_7|
         lit_8|
         lit_9|
-        int).as(:pure_number) }
+        int|
+        wide_int).as(:pure_number) }
     
     rule(:layer_1_unit){(
         lit_10|
@@ -107,6 +108,7 @@ class CjkTrans < Parslet::Transform
     rule(lit_8: simple(:x)) { 8 }
     rule(lit_9: simple(:x)) { 9 }
     rule(int: simple(:x)) { x.to_i }
+    rule(wide_int: simple(:x)) { x.to_s.tr("０-９", "0-9").to_i }
     rule(lit_10: simple(:x)) { 10 }
     rule(lit_100: simple(:x)) { 100 }
     rule(lit_1000: simple(:x)) { 1000 }
@@ -139,5 +141,5 @@ class CjkTrans < Parslet::Transform
 end
 
 # parsed = CjkParser.new.parse("零一二三四五六七八九〇") 
-parsed = CjkParser.new.parse("2万千五百十一") 
+parsed = CjkParser.new.parse("２万千五百十一") 
 pp CjkTrans.new.apply(parsed)
