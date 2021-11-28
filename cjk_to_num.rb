@@ -74,29 +74,28 @@ end
 
 PureExpressionNode = Struct.new(:args) do
     def eval
-        sum = 0 
         figure = 1
-        i = args.reverse.inject(0) {|result, item|
+        sum = args.reverse.inject(0) {|result, item|
          result = result + item * figure
          figure *= 10
          result
         }
-        result.to_i
+        sum.to_i
     end
 end
 
 Layer1ExpressionNode = Struct.new(:left, :unit, :right) do
     def eval
-        l = left.eval || 1
-        r = right.eval || 0
+        l = left ? left.eval : 1
+        r = right ? right.eval : 0
         l * unit + r
     end
 end
 
 Layer2ExpressionNode = Struct.new(:left, :unit, :right) do
     def eval
-        l = left.eval || 1
-        r = right.eval || 0
+        l = left ? left.eval : 1
+        r = right ? right.eval : 0
         l * unit + r
     end
 end
@@ -140,4 +139,5 @@ class CjkTrans < Parslet::Transform
 end
 
 parsed = CjkParser.new.parse("２３万千五百十一") 
-pp CjkTrans.new.apply(parsed)
+transed= CjkTrans.new.apply(parsed)
+pp transed.eval
