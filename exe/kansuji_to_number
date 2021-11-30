@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require "kansuji_to_number"
+p KansujiToNumber.trans(ARGV[0]) if ARGV[0]
