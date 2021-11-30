@@ -1,8 +1,6 @@
 # KansujiToNumber
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/kansuji_to_number`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Converts Kansuji(漢数字) to numbers.
 
 ## Installation
 
@@ -22,7 +20,11 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```ruby
+require 'kansuji_to_number'
+result = KansujiToNumber.trans("一兆二億三万四千五百六十七")
+p result # => 1000200034567
+```
 
 ## Development
 

@@ -8,13 +8,13 @@ Gem::Specification.new do |spec|
   spec.authors       = ["kurehajime"]
   spec.email         = ["xiidec@gmail.com"]
 
-  spec.summary       = "Converts 漢数字 to numbers."
-  spec.description   = "Converts 漢数字 to numbers."
+  spec.summary       = "Converts Kansuji(漢数字) to numbers."
+  spec.description   = "Converts Kansuji(漢数字) to numbers."
   spec.homepage      = "https://github.com/kurehajime/kansuji_to_number"
   spec.license       = "MIT"
   spec.required_ruby_version = ">= 2.4.0"
 
-  spec.metadata["allowed_push_host"] = "TODO: Set to 'https://mygemserver.com'"
+  spec.metadata["allowed_push_host"] = "https://mygemserver.com"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/kurehajime/kansuji_to_number"
